@@ -1,0 +1,52 @@
+<?php
+
+require '../dbcon.php';
+require_once 'config.php';
+require 'vendor/autoload.php';
+require 'fetch_xkcd.php';
+// while (1) {
+//     set_time_limit(0);
+if ($con) {
+    $getQuery = "select email,username,status from registration where status='active' ";
+    $executeQuery = mysqli_query($con, $getQuery);
+    $resultArr = mysqli_fetch_all($executeQuery);
+    $tos = "";
+    $to_email = "techg0345@gmail.com";
+    foreach ($resultArr as $user) {
+        $Email = trim($user[0]) . "\r\n";
+        $tos = $tos . ',' . $Email;
+    }
+    $tos = ltrim($tos, ',');
+    $subject = "enjoy your comic";
+    $body = "<img src='$img_url'>";
+    $mailHead = implode("\r\n", [
+        "MIME-Version: 1.0",
+        "Content-type: text/html; charset=utf-8",
+        "From: indinikumar01200@gmail.com"
+    ]);
+    $headers = "From: indinikumar01200@gmail.com";
+    if (mail($tos, $subject, $body, $mailHead)) {
+        echo "Email successfully sent to $tos...";
+    } else {
+        echo "Email sending failed...";
+    }
+}
+
+// echo $headers;
+// $email = new \SendGrid\Mail\Mail();
+// $email->setFrom("onkarpreetsingh23@gmail.com", "op23singh");
+// $email->setSubject("Sending with SendGrid is Fun");
+// $email->addTos($tos);
+// $email->addContent("text/plain", "enjoy your comic");
+// $email->addContent("text/html", "<img src='$img_url'>");
+// $email->addAttachment(base64_encode(file_get_contents("image.png")), 'image/png', "image", "attachment", "image");
+// $sendgrid = new \SendGrid(SENDGRID_APIKEY);
+// try {
+//     $response = $sendgrid->send($email);
+//     print $response->statusCode() . "\n";
+//     print_r($response->headers());
+//     print $response->body() . "\n";
+// } catch (Exception $e) {
+//     echo 'Caught exception: ' . $e->getMessage() . "\n";
+// }
+// }

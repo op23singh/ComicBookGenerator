@@ -1,0 +1,49 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head></head>
+
+<body>
+    <form method="post" action=" <?php echo $_SERVER['PHP_SELF'] ?> ">
+        <input type="text" name="username" placeholder="enter your FullName" required>
+        <input type="text" name="email" placeholder="enter your email" required>
+        <input type="password" name="password" placeholder="enter your password" required>
+        <input type="password" name="cpassword" placeholder="enter your password again" required>
+        <input type="text" name="mobile" placeholder="enter your mobile" required>
+        <input type="submit" name="submit" value="subscribe">
+    </form>
+    <?php
+    include 'dbcon.php';
+    if (isset($_POST['submit'])) {
+        $username = mysqli_real_escape_string($con, $_POST['username']);
+        $password = mysqli_real_escape_string($con, $_POST['password']);
+        $cpassword = mysqli_real_escape_string($con, $_POST['cpassword']);
+        $email = mysqli_real_escape_string($con, $_POST['email']);
+        $mobile = mysqli_real_escape_string($con, $_POST['mobile']);
+        $pass = password_hash($password, PASSWORD_BCRYPT);
+        $cpass = password_hash($cpassword, PASSWORD_BCRYPT);
+        $query = mysqli_query($con, "select * from registration where email='$email'") or die(mysqli_error($con));
+        $count = mysqli_num_rows($query);
+        if ($count > 0) {
+            echo "email already exits";
+        } else {
+            if ($password === $cpassword) {
+                $insertQuery = "insert into registration(username,email,mobile,password,cpassword) values('$username','$email','$mobile','$pass','$cpass')";
+                $iquery = mysqli_query($con, $insertQuery) or die(mysqli_error($con));
+                if ($iquery) {
+                    echo '<script type="text/javascript"> alert("user inserted successfully");</script>';
+                } else {
+                    echo '<script type="text/javascript">alert("user is not inserted");</script>';
+                }
+            } else {
+                echo "passwords are not matching";
+            }
+        }
+    }
+    ?>
+</body>
+
+</html>
